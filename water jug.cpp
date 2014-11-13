@@ -99,6 +99,16 @@ int isNodePresent(struct node *nextState, int maxJug1, int maxJug2, int reqJug1,
 
 
 // Tries all production rules, verifies with end state amd returns state if it is a goal state, else returns NULL.
+
+/* PRODUCTION RULES 
+(x, y) -> (a, y) if x < a i.e., Fill the first jug if it is not already full
+(x, y) -> (x, b) if y < b i.e., Fill the second jug if it is not already full
+(x, y) -> (0, y) if x > 0 i.e., Empty the first jug
+(x, y) -> (x, 0) if y > 0 i.e, Empty the second jug
+(x, y) -> (min(x + y, a), max(0, x + y – a)) if y > 0 i.e., Pour from second jug into first jug until the first jug is full or the second jug is empty
+(x, y) -> (max(0, x + y – b), min(x + y, b)) if x > 0 i.e., Pour from first jug into second jug until the second jug is full or the first jug is empty
+*/
+
 struct node* genNewState(struct node *crntState, int maxJug1, int maxJug2, int reqJug1, int reqJug2)
 {
 	int d;
@@ -174,25 +184,28 @@ struct node* genNewState(struct node *crntState, int maxJug1, int maxJug2, int r
 	return(NULL);
 }
 
-// Generates tree of states.
+// Generates tree of all valid states.
 void generateTree(int maxJug1, int maxJug2, int reqJug1, int reqJug2)
 {	
-	printf("Generate Tree function called.\n\n");
+	printf("Generate Tree of valid states.\n");
 	int flag1, flag2;
-	
+	int total = 0;
 	struct node *tempLeft, *tempRight;
 	
 	// Initialising root(0,0)
 	root  = (struct node*)malloc(sizeof(struct node));
 	root->x = 0; root->y = 0; root->next = NULL;
+	total++;
 	
 	// Initialising left(x,0)
 	left = (struct node*)malloc(sizeof(struct node));
 	left->x = 0; left->y = maxJug2; left->next = NULL;
-
+	total++;
+	
 	// Initialising right(0,y)
 	right = (struct node*)malloc(sizeof(struct node));
 	right->x = maxJug1; right->y = 0; right->next = NULL;
+	total++;
 	
 	tempLeft = left;
 	tempRight = right;
@@ -203,6 +216,7 @@ void generateTree(int maxJug1, int maxJug2, int reqJug1, int reqJug2)
 		if((tempLeft->x != reqJug1) || (tempLeft->y != reqJug2))
 		{
 			tempLeft->next = genNewState(tempLeft, maxJug1, maxJug2, reqJug1, reqJug2);
+			total++;
 			tempLeft = tempLeft->next;
 			tempLeft->next = NULL;
 			flag1 = 1;
@@ -210,6 +224,7 @@ void generateTree(int maxJug1, int maxJug2, int reqJug1, int reqJug2)
 		if((tempRight->x != reqJug1) || (tempRight->y != reqJug2))
 		{
 			tempRight->next = genNewState(tempRight, maxJug1, maxJug2, reqJug1, reqJug2);
+			total++;
 			tempRight = tempRight->next;
 			tempRight->next = NULL;
 			flag2 = 1;
@@ -217,6 +232,7 @@ void generateTree(int maxJug1, int maxJug2, int reqJug1, int reqJug2)
 		if((flag1 == 0) && (flag2 == 0))
 			break;
 	}
+	printf("Total States: %d\n", total);
 }
 
 
