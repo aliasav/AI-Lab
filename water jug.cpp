@@ -21,6 +21,7 @@ void DFS()
 			break;
 		temp = temp->next;
 	}
+	
 	temp = right;
 	printf("Possible DFS Result 2\n");
 	while(1)
@@ -51,6 +52,7 @@ void BFS(int reqJug1, int reqJug2)
 	}
 }
 
+// Returns 0 if next state is goal state or if next state does not violate any production rules and if it is not already present in existing tree.
 int isNodePresent(struct node *nextState, int maxJug1, int maxJug2, int reqJug1, int reqJug2)
 {
 	struct node *temp;
@@ -66,6 +68,8 @@ int isNodePresent(struct node *nextState, int maxJug1, int maxJug2, int reqJug1,
 	// If Both jugs empty, return 1
 	if((nextState->x == 0) && (nextState->y == 0))
 		return(1);
+	
+	// Searching existing tree for next state
 	
 	// Search for next state, starting from left
 	temp = left;
@@ -89,14 +93,19 @@ int isNodePresent(struct node *nextState, int maxJug1, int maxJug2, int reqJug1,
 			break;
 		temp = temp->next;
 	}
+	
 	return(0);
 }
 
+
+// Tries all production rules, verifies with end state amd returns state if it is a goal state, else returns NULL.
 struct node* genNewState(struct node *crntState, int maxJug1, int maxJug2, int reqJug1, int reqJug2)
 {
 	int d;
 	struct node *nextState;
 	nextState = (struct node*)malloc(sizeof(struct node));
+	
+	// Applying different production rules
 	
 	// Trying (max,current)	
 	nextState->x = maxJug1;
@@ -122,32 +131,40 @@ struct node* genNewState(struct node *crntState, int maxJug1, int maxJug2, int r
 	if(isNodePresent(nextState, maxJug1, maxJug2, reqJug1, reqJug2) != 1)
 		return(nextState);
 
+	// General case: (x,y) where y < max2
 	if((crntState->y < maxJug2) && (crntState->x != 0))
 	{
 		d = maxJug2 - crntState->y;
+		
 		if(d >= crntState->x)
 			{
+				// Pour all contents of Jug1 into Jug2
 				nextState->x = 0;
 				nextState->y = crntState->y + crntState->x;
 			}
 		else
 		{
+			// Pour as much as Jug2 can take from Jug1
 			nextState->x = crntState->x - d;
 			nextState->y = crntState->y + d;
 		}
 		if(isNodePresent(nextState, maxJug1, maxJug2, reqJug1, reqJug2) != 1)
 				return(nextState);
 	}
+	
+	// General case: (x,y) where x < max1
 	if((crntState->x < maxJug1) && (crntState->y != 0))
 	{
 		d = maxJug1 - crntState->x;
 		if(d >= crntState->y)
 		{
-			nextState->y =-0;
+			// Pour all contents of Jug2 into Jug1
+			nextState->y = 0;
 			nextState->x = crntState->x + crntState->y;
 		}
 		else
 		{
+			// Pour as much as Jug1 can take from Jug2
 			nextState->y = crntState->y - d;
 			nextState->x = crntState->x + d;
 		}
@@ -157,7 +174,7 @@ struct node* genNewState(struct node *crntState, int maxJug1, int maxJug2, int r
 	return(NULL);
 }
 
-
+// Generates tree of states.
 void generateTree(int maxJug1, int maxJug2, int reqJug1, int reqJug2)
 {	
 	printf("Generate Tree function called.\n\n");
@@ -219,5 +236,6 @@ int main()
 	generateTree(maxJug1, maxJug2, reqJug1, reqJug2);
 	DFS();
 	BFS(reqJug1, reqJug2);
+	
 	return 0;
 }
