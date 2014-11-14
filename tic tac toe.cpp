@@ -64,10 +64,13 @@ const char* game(int user)
  
 	printf("Board postions are numbered so:\n1 2 3\n4 5 6\n7 8 9\n");
 	printf("You have O, I have X.\n\n");
-	for (k = 0; k < 9; k++, user = !user) {
-		while(user) {
+	for (k = 0; k < 9; k++, user = !user) 
+	{
+		while(user) 
+		{
 			printf("your move: ");
-			if (!scanf("%d", &move)) {
+			if (!scanf("%d", &move)) 
+			{
 				scanf("%*s");
 				continue;
 			}
@@ -77,8 +80,10 @@ const char* game(int user)
 			b[i][j] = 1;
 			break;
 		}
-		if (!user) {
-			if (!k) { /* randomize if computer opens, less boring */
+		if (!user) 
+		{
+			if (!k) 
+			{ /* randomize if computer opens, less boring */
 				best_i = rand() % 3;
 				best_j = rand() % 3;
 			} else
